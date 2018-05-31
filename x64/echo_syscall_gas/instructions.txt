@@ -1,0 +1,6 @@
+Echo Program
+
+Task: Write a program that echo's user input using syscalls
+
+Tips:
+1) sys_read/sys_write are your friends

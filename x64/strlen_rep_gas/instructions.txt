@@ -1,0 +1,8 @@
+strlen_rep
+
+Task: Use string manipulation functions (stos, scas, cmps, lods, etc) to calculate string length
+
+Tips:
+1) In order to use the rep/repe/repne instructions, you probably want to setup rcx with it's MAX_VALUE (FFFF..)
+2) rep/repe/repne subtracts 1 from rcx for each iteration
+3) If you 'not' a number and add one, you get the two's compliment, which coincidentally happens to be the distance from MAX_VALUE

@@ -1,0 +1,25 @@
+encoder
+
+Task: An encoder/decoder is used to ensure that there are no "bad-bytes" in a payload (shellcode). Sometimes people also use
+them for obfuscation purposes (although the decoder stub is easily signaturable). Use your xor encryptor to encode a payload.
+Then write a decoder stub in assembly and prepend it to your output
+
+Tips:
+1) Your decoder needs to be position independent. A common technique for determining where your code is in memory is called
+  "jump-call-pop". You jump to a call instruction that is in front of where you want to know the address of. Then you call
+  a pop instruction. The call instruction pushes the return value onto the stack, and now your pop instruction knows where
+  we are executing:
+
+        jmp label_call_instruction
+        label_pop_address:
+        pop rdi
+        // decoder code here
+        .
+        .
+        .
+        jmp payload
+        label_call_instruction:
+        call label_pop_address
+        payload: // the address we want to know is over here
+
+2) Make sure the decoder stub doesn't have any null-bytes either.

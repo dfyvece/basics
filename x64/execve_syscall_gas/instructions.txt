@@ -1,0 +1,7 @@
+execve_syscall
+
+Task: Write a program to execve into /bin/sh
+
+Tips:
+1) execve should look like the following when invoked:
+    evecve ("/bin/sh", ["/bin/sh", 0], 0)

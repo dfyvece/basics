@@ -1,0 +1,10 @@
+byte2hex
+
+Task: Write a program that converts a byte-string to an ascii-readable hexadecimal string
+
+Example:
+Input: ///
+Output: 2f2f2f
+
+Tips:
+1) Write byte2hex as a function, you may want to use it for another exercise

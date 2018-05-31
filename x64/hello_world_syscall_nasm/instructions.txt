@@ -1,0 +1,16 @@
+Hello World
+
+Task: Write a hello world program using x64 assembly and syscalls
+
+Tips:
+
+1) Put the syscall number in rax
+2) If you don't want to lookup the syscall numbers, they are all defined in the include file (include/(gas|nasm).s)
+3) The arguments for syscalls is:
+    arg1: rdi
+    arg2: rsi
+    arg3: rdx
+    arg4: r10
+    arg5: r8
+    arg6: r9
+4) On x64, syscalls use the 'syscall' instruction and not 'int 0x80'

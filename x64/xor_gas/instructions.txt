@@ -1,0 +1,7 @@
+xor
+
+Task: Write a function that does a single byte xor encryption
+
+Tips:
+1) You can use the hex2byte and byte2hex functions to help with your user input.
+   If you don't have those working, you can use the template

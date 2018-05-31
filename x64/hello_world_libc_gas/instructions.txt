@@ -1,0 +1,8 @@
+Hello World
+
+Task: Write a hello world program using x64 assembly and libc (printf)
+
+Tips:
+
+1) Put the address of the string you want in the rdi register
+2) printf() rax to hold the number of floating-point inputs. If you have none, rax should be zero

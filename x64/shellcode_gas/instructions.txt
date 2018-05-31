@@ -1,0 +1,11 @@
+shellcode
+
+Task: Write a program to execve into /bin/sh, but use instructions to avoid null-bytes
+
+Tips:
+1) Common methods to put zero in a register include:
+    xor rax, rax
+    sub rax, rax
+2) You can also avoid null-bytes by using the smaller portion of the register:
+    mov al, 1
+    mov r8b, 0xff

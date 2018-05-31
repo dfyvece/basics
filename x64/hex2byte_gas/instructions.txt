@@ -1,0 +1,10 @@
+hex2byte
+
+Task: Write a program that converts a hexidecimal string to a byte string
+
+Example:
+Input: 2f2f2f
+Output: ///
+
+Tips:
+1) Write hex2byte as a function, you may want to use it for another exercise

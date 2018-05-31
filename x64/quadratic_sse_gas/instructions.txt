@@ -1,0 +1,20 @@
+pythagorean
+
+Task: Write a program to solve for c in the pythagorean theorem using SSE packed scalars
+
+Tips:
+1) The equation you're solving is sqrt(a^2 + b^2)
+2) Used packed scalars to simultaneously square a and b
+3) An example of using packed scalars to double 4 numbers is as follows
+
+    movaps xmm0, [ADDRESS_OF_ARRAY_OF_FOUR_FLOATS]      # load arrays into register
+    addps xmm0, xmm0                                    # add register with itself
+    movaps [ADDRESS_OF_ARRAY_OF_FOUR_FLOATS], xmm0      # all the values in the array are now doubled
+
+4) Addresses need to be 16-byte aligned
+5) Useful instructions are:
+   movlps xmm0/mem, mem/xmm0        // move two single-precision floats to/from xmm/mem
+   addps/subps/mulps/divps/sqrtps   // do parallel operations in arrays
+   movss xmm0/mem, mem/xmm0         // move a single-precision floats to/from xmm/mem
+   addss/subss/mulss/divss/sqrtss   // do an operation on a register with single value
+

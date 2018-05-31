@@ -1,0 +1,40 @@
+cosines_x87
+
+Task: Use the x87 coprocessor to calculate the third leg of a triangle
+
+Tips:
+1) The formula for the law of cosines is sqrt(a^2 + b^2 - 2*a*b*cos(theta))
+2) The x87 coprocessor is stack based, that means you load arguments to the top of the stack
+   using fld (float load) and you pop them using fstp (float store pop). That also means that
+   you (generally) execute instructions using the top two values on the stack.
+3) The registers in x87 are st0 through st7, where st0 is the top of the stack
+4) An example of adding two numbers is as follows:
+
+        fld DWORD PTR [my_float0]   # load my_float0 onto the top of the stack
+                                    # my_float0 is currently in st0
+        fld DWORD PTR [my_float1]   # load my_float1 onto the top of the stack,
+                                    # my_float1 is in st0, and my_float0 moved
+                                    # to st1
+        faddp                       # add the top two arguments on the stack,
+                                    # and store the result on the top of the stack
+        fstp DWORD PTR [my_result]  # transfer result back from x87 coproc and
+
+5) You can also remove the 'p' suffix from an instruction to choose an arbitrary
+   register to perform the operation on (instead of st0 and st1). One of the two
+   registers must still be st0. You can't use a register that doesn't already
+   have a number in it (meaning you can't just start using st7 unless you already
+   have 8 numbers in the coproc)
+
+        fld DWORD PTR [my_float0]   # load my_float0 onto the top of the stack
+                                    # my_float0 is currently in st0
+        fld DWORD PTR [my_float1]   # load my_float1 onto the top of the stack,
+                                    # my_float1 is in st0, and my_float0 moved
+                                    # to st1
+        fadd st0, st1               # add the top two arguments on the stack,
+                                    # and store the result on the top of the stack
+                                    # this is logically the same as above
+        fstp DWORD PTR [my_result]  # transfer result back from x87 coproc and
+
+6) Useful instructions are: fld, fst, fist(round and store as integer)
+   fadd, fsub, fmul, fdiv, fsin, fcos, fabs, fsqrt, fldpi (load pi into st0)
+   There's many more
