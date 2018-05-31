@@ -9,7 +9,7 @@
     .lcomm hexbuffer, BUFFER_LEN
     .lcomm bytebuffer, BUFFER_LEN/2
     .lcomm hexoutput, BUFFER_LEN
-    .lcomm decoderbuffer, BUFFER_LEN
+    .lcomm keybuffer, 2
 
 .text
 
@@ -18,11 +18,11 @@
     hex_map: .byte  0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66
     .equ key, 0x55
 
-                                                            # KEY #                       # SIZE #
-    decoder_stub:   .byte 0xeb, 0x20, 0x48, 0x31, 0xdb, 0xb3, key, 0x48, 0x31, 0xd2, 0xb2, 0xFF
-                    .byte 0x5f, 0x48, 0x89, 0xd1, 0x48, 0xff, 0xc1, 0x48, 0x31, 0xc0
-                    .byte 0x8a, 0x44, 0x0f, 0xff, 0x30, 0xd0, 0x88, 0x44, 0x0f, 0xff, 0xe2, 0xf4
-                    .byte 0xe8, 0xdb, 0xff, 0xff, 0xff
+    decoder_stub:   .ascii "eb224831dbb3"
+         key_loc:   .ascii "FF4831d2b2"                 # the 'FF' byte here is where the key goes
+         len_loc:   .ascii "FF5f4889d148ffc14831c0"     # the 'FF' byte here is the length of the payload (not including decoder)
+                    .ascii "8a440fff30d888440fffe2f4eb05"
+                    .asciz "e8d9ffffff"
     .equ decoder_len, $ - decoder_stub
 
 .text
@@ -248,6 +248,10 @@ hex2byte:
 
 _start:
 
+    # store key in keybuffer
+    lea rdi, keybuffer
+    mov BYTE PTR [rdi], key
+
     # sys_read(STDIN, hexbuffer, BUFFER_LEN)
     mov rdx, BUFFER_LEN
     lea rsi, hexbuffer
@@ -255,37 +259,46 @@ _start:
     mov rax, SYS_READ
     syscall
 
-    # rax = hex2byte(bytebuffer, hexbuffer)
+    # [rsp:payload_len] = hex2byte(bytebuffer, hexbuffer)
     lea rsi, hexbuffer
     lea rdi, bytebuffer
     call hex2byte
-
-    # xor_crypt(bytebuffer, byte, rax)
     push rax
-    mov rdx, rax
-    mov rsi, key
-    lea rdi, bytebuffer
-    call xor_crypt
-    pop rdx
 
-    # decoder_stub[12] = count
-    lea rdi, decoder_stub
-    mov BYTE PTR [rdi], dl
-
-    # byte2hex(hexoutput, bytebuffer, rdx)
-    lea rsi, bytebuffer
-    lea rdi, hexoutput
+    # byte2hex(len_loc, rsp, 1)
+    mov rdx, 1
+    mov rsi, rsp
+    lea rdi, len_loc
     call byte2hex
 
-    # sys_write_STDOUT, decoder_stub, decoder_len)
+    # byte2hex(key_loc, keybuffer, 1)
+    mov rdx, 1
+    lea rsi, keybuffer
+    lea rdi, key_loc
+    call byte2hex
+
+    # sys_write(STDOUT, decoder_stub, decoder_len)
     mov rdx, decoder_len
     lea rsi, decoder_stub
     mov rdi, STDOUT
     mov rax, SYS_WRITE
     syscall
 
-    # sys_write(STDOUT, hexoutput, rax)
-    mov rdx, rax
+    # xor_crypt(bytebuffer, byte, [rsp:payload_len])
+    mov rdx, [rsp]
+    mov rsi, key
+    lea rdi, bytebuffer
+    call xor_crypt
+
+    # byte2hex(hexoutput, bytebuffer, [rsp:payload_len])
+    mov rdx, [rsp]
+    lea rsi, bytebuffer
+    lea rdi, hexoutput
+    call byte2hex
+
+    # sys_write(STDOUT, hexoutput, 2*[rsp:payload_len])
+    pop rdx
+    shl rdx, 1
     lea rsi, hexoutput
     mov rdi, STDOUT
     mov rax, SYS_WRITE

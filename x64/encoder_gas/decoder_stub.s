@@ -12,7 +12,7 @@ _start:
     # rbx must be key
     # data is after this section
 
-    jmp encoded_data
+    jmp jump_block
     decode_stub:
     xor rbx, rbx
     mov bl, 55
@@ -26,9 +26,12 @@ _start:
     # rdi[rcx] ^= rsi
     for_xor_loop:
     mov al, BYTE PTR [rdi + rcx - 1]
-    xor al, dl
+    xor al, bl
     mov BYTE PTR [rdi + rcx - 1], al
     loop for_xor_loop
-    encoded_data:
+    jmp encoded_data
+    jump_block:
     call decode_stub
+    encoded_data:
+
 
